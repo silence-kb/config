@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    
+    .box {
+      width: 350px;
+      height: 350px;
+      margin: 100px;
+      border: 1px solid #ccc;
+      position: relative;
+    }
+    
+    .big {
+      width: 400px;
+      height: 400px;
+      position: absolute;
+      top: 0;
+      left: 360px;
+      border: 1px solid #ccc;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .mask {
+      width: 175px;
+      height: 175px;
+      background: rgba(255, 255, 0, 0.4);
+      position: absolute;
+      top: 0; 
+      left: 0;
+      cursor: move;
+      display: none;
+    }
+    
+    .small {
+      position: relative;
+    }
+    
+    .box img {
+      vertical-align: top;
+    }
+    
+    #bigBox > img { /*是让里面的图片脱标，为的就是让里面的图片进行一个移动*/
+      position: absolute;
+    }
+  </style>
+  <script src="./jquery-2.2.2.min.js"></script>
+  <!--<script>
+    window.onload = function () {
+      //1.鼠标移入显示遮罩层
+      var smallBox = document.querySelector('#smallBox');
+      var mask = document.querySelector('.mask');
+      smallBox.onmousemove =function(e){
+        mask.style.display = 'block';
+        //2.鼠标移入到smallBox里面mask 跟着鼠标移动
+        //a. 鼠标在small里面的位置
+        e = e || window.event;
+        var smallX = e.pageX - $('')
+      };
+      smallBox.onmouseout = function(){
+        mask.style.display= "none";
+      };
+    }
+  </script>-->
+  <script>
+    $(function(){
+       //1.鼠标移入显示遮罩层
+       var $smallBox = $('#smallBox');
+       var $mask = $('.mask');
+       var $box = $('.box');
+       var $bigBox = $(".big");
+       var $bigImg = $("#bigImg");
+       $smallBox.mousemove(function(e){
+         $mask.css('display','block');
+         $bigBox.css('display',"block");
+         //2.鼠标移动遮罩层跟着移动
+         //a. 得到鼠标在smallBox里面的坐标
+         var $smallX = e.pageX - $box.offset().left-$mask.width()/2;
+         var $smallY = e.pageY - $box.offset().top-$mask.height()/2;
+         console.log($smallX+"===="+$smallY);
+         //b.限制遮罩层的移动范围
+         $smallX = $smallX<0?0:$smallX;
+         $smallY=$smallY<0?0:$smallY;
+// -------------------------------------------------------------------------------
+        //  $smallX = $smallX>$mask.width() ? $mask.width() : $smallX;
+        //  $smallY = $smallY>$mask.height() ? $mask.height() : $smallY;
+         $smallX = $smallX>($smallBox.width()-$mask.width())? $mask.width() : $smallX;
+         $smallY = $smallY>($smallBox.height()-$mask.height()) ? $mask.height() : $smallY;
+
+         $mask.css({"top":$smallY,"left":$smallX});
+
+        // 显示大盒子图片,大盒子不移动,是大盒子里面的图片向相反的方向移动
+        // 大盒子里
+        
+        $bigX = -$smallX/$mask.width()*$bigBox.width();
+        $bigY = -$smallY/$mask.height()*$bigBox.height();
+        $bigImg.css({
+          "top":$bigY,
+          "left":$bigX,
+        })
+
+
+       });
+       $smallBox.mouseout(function(){
+         $mask.css('display','none');
+       })
+    })
+  </script>
+</head>
+<body>
+<div class="box" id="box">
+  <div class="small" id="smallBox">
+    <img src="images/001.jpg" width="350" alt=""/>
+    <div class="mask" id="mask"></div>
+  </div>
+  <div class="big" id="bigBox">
+    <img id="bigImg" src="images/0001.jpg" width="800" alt=""/>
+  </div>
+</div>
+
+</body>
+</html>

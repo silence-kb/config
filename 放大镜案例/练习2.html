@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 350px;
+            height: 350px;
+            margin: 100px;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        .big {
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            top: 0;
+            left: 360px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            display: none;
+        }
+
+        .mask {
+            width: 175px;
+            height: 175px;
+            background: rgba(255, 255, 0, 0.4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+            display: none;
+        }
+
+        .small {
+            position: relative;
+        }
+
+        .box img {
+            vertical-align: top;
+        }
+
+        #bigBox > img {
+            /*是让里面的图片脱标，为的就是让里面的图片进行一个移动*/
+            position: absolute;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            //1.获取元素
+            var box = document.getElementById('box');
+            var smallBox = document.getElementById('smallBox');
+            var mask = document.getElementById('mask');
+            var bigBox = document.getElementById('bigBox');
+            var bigImg =document.getElementById('bigImg');
+            smallBox.onmousemove = function (e){
+                e = e|| window.event;
+                mask.style.display = 'block';
+                bigBox.style.display ='block';
+                //盒子跟着鼠标一起动
+                var mouseX = page(e).x - box.offsetLeft-mask.offsetWidth/2;
+                var mouseY = page(e).y - box.offsetTop-mask.offsetHeight/2;
+                mouseX = mouseX < 0 ? 0 : mouseX;
+                mouseY = mouseY <0 ? 0 : mouseY;
+                mouseX = mouseX >mask.offsetWidth ? mask.offsetWidth : mouseX;
+                mouseY = mouseY >mask.offsetHeight ? mask.offsetHeight :mouseY;
+                mask.style.left = mouseX +'px';
+                mask.style.top = mouseY +'px';
+                // 右边大图片也跟着一起动
+                //  大盒子移动距离/mask移动距离 ==  大盒子高度/mask盒子高度
+                // 如果盒子移动,对布局有影响,所有里面的图片移动相反的距离,大盒子移动距离  = 图片移动距离
+                bigImg.style.left = - bigBox.offsetWidth/mask.offsetWidth*mouseX + 'px';
+                bigImg.style.top = - bigBox.offsetHeight/mask.offsetHeight*mouseY + 'px';
+            }
+            smallBox.onmouseout = function (){
+                mask.style.display = 'none';
+                bigBox.style.display ='none';
+            }
+            function page(e){
+                return {
+                    x: e.pageX || e.clicentX + document.documentElement.scrollLeft,
+                    y: e.pageY || e.clientY + document.documentElement.scrollTop
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="box" id="box">
+    <div class="small" id="smallBox">
+        <img src="images/001.jpg" width="350" alt=""/>
+
+        <div class="mask" id="mask"></div>
+    </div>
+    <div class="big" id="bigBox">
+        <img id="bigImg" src="images/0001.jpg" width="800" alt=""/>
+    </div>
+</div>
+
+</body>
+</html>
